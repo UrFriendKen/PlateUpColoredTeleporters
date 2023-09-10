@@ -37,11 +37,21 @@ namespace KitchenColoredTeleporters
                     CConveyTeleport teleport = teleports[i];
                     CLinkedView view = views[i];
 
+                    float hue = GetHue(Mathf.Abs(teleport.GroupID));
                     SendUpdate(view, new ViewData()
                     {
                         Index = teleport.GroupID,
-                        Hue = GetHue(teleport.GroupID)
+                        Hue = hue
                     });
+
+                    if (teleport.GroupID < 0 && teleport.Target != default && Require(teleport.Target, out CLinkedView targetLinkedView))
+                    {
+                        SendUpdate(targetLinkedView, new ViewData()
+                        {
+                            Index = teleport.GroupID,
+                            Hue = hue
+                        });
+                    }
                 }
             }
 
