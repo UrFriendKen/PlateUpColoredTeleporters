@@ -15,9 +15,6 @@ namespace KitchenColoredTeleporters
         const float ARROWS_SATURATION = 0.5905837f;
         const float ARROWS_VALUE = 0.7264f;
 
-        const float STEP_SIZE = 1f / 20f;
-        const float MULTIPLIER = 37f;
-
         public class UpdateView : IncrementalViewSystemBase<ViewData>, IModSystem
         {
             EntityQuery Views;
@@ -37,27 +34,19 @@ namespace KitchenColoredTeleporters
                     CConveyTeleport teleport = teleports[i];
                     CLinkedView view = views[i];
 
-                    float hue = GetHue(Mathf.Abs(teleport.GroupID));
                     SendUpdate(view, new ViewData()
                     {
-                        Index = teleport.GroupID,
-                        Hue = hue
+                        Index = teleport.GroupID
                     });
 
                     if (teleport.GroupID < 0 && teleport.Target != default && Require(teleport.Target, out CLinkedView targetLinkedView))
                     {
                         SendUpdate(targetLinkedView, new ViewData()
                         {
-                            Index = teleport.GroupID,
-                            Hue = hue
+                            Index = teleport.GroupID
                         });
                     }
                 }
-            }
-
-            private float GetHue(int index)
-            {
-                return (DEFAULT_HUE + (STEP_SIZE * index * MULTIPLIER)) % 1;
             }
         }
 
@@ -81,15 +70,19 @@ namespace KitchenColoredTeleporters
         public MeshRenderer SurfaceRenderer;
         public MeshRenderer ArrowsRenderer;
 
-        protected override void UpdateData(ViewData data)
+        public void Update()
         {
-            GroupID = data.Index;
-            Hue = data.Hue;
+            Hue = GetHue(Mathf.Abs(GroupID));
             Color surfaceColor = Color.HSVToRGB(Hue, SURFACE_SATURATION, SURFACE_VALUE);
             Color arrowsColor = Color.HSVToRGB(Hue, ARROWS_SATURATION, ARROWS_VALUE);
 
             UpdateMaterialColor(SurfaceRenderer, surfaceColor);
             UpdateMaterialColor(ArrowsRenderer, arrowsColor);
+        }
+
+        protected override void UpdateData(ViewData data)
+        {
+            GroupID = data.Index;
         }
 
         private void UpdateMaterialColor(Renderer renderer, Color color)
@@ -103,6 +96,11 @@ namespace KitchenColoredTeleporters
                 }
                 renderer.material.SetColor("_Color0", color);
             }
+        }
+
+        private float GetHue(int index)
+        {
+            return (DEFAULT_HUE + (1f / Main.PrefMananger.Get<int>(Main.COLOR_CYCLE_LENGTH_ID) * index * Main.PrefMananger.Get<int>(Main.COLOR_STAGGER_ID))) % 1;
         }
     }
 }

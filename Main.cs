@@ -1,8 +1,10 @@
 ﻿using HarmonyLib;
 using KitchenData;
 using KitchenMods;
+using PreferenceSystem;
 using System.Reflection;
 using UnityEngine;
+using PreferenceSystem.Generators;
 
 // Namespace should have "Kitchen" in the beginning
 namespace KitchenColoredTeleporters
@@ -11,11 +13,17 @@ namespace KitchenColoredTeleporters
     {
         public const string MOD_GUID = $"IcedMilo.PlateUp.{MOD_NAME}";
         public const string MOD_NAME = "Colored Teleporters";
-        public const string MOD_VERSION = "0.1.1";
+        public const string MOD_VERSION = "0.1.3";
 
         internal const int TELEPORTER_APPLIANCE_ID = 459840623;
         internal const int SHED_MAGIC_EVERYTHING_APPLIANCE_ID = -349733673;
         internal const int SHED_TELEPORT_TARGET_APPLIANCE_ID = 1836107598;
+
+        internal const string COLOR_CYCLE_LENGTH_ID = "colorCycleLength";
+        internal const string COLOR_STAGGER_ID = "colorStagger";
+        internal static bool ColorChanged = false;
+
+        internal static PreferenceSystemManager PrefMananger;
 
         public Main()
         {
@@ -25,14 +33,40 @@ namespace KitchenColoredTeleporters
 
         public void PostActivate(KitchenMods.Mod mod)
         {
+            IntArrayGenerator intArrGen = new IntArrayGenerator();
+            intArrGen.AddRange(1, 40, 1, COLOR_CYCLE_LENGTH_ID, delegate (string _, int val)
+            {
+                return val.ToString();
+            });
 
+            int[] cycleLengthVals = intArrGen.GetArray();
+            string[] cycleLengthStrings = intArrGen.GetStrings();
+            PrefMananger = new PreferenceSystemManager(MOD_GUID, MOD_NAME);
+            PrefMananger
+                .AddLabel("Colored Teleporters")
+                .AddLabel("Color Cycle Length")
+                .AddOption<int>(
+                    COLOR_CYCLE_LENGTH_ID,
+                    20,
+                    cycleLengthVals,
+                    cycleLengthStrings)
+                .AddLabel("Color Stagger")
+                .AddOption<int>(
+                    COLOR_STAGGER_ID,
+                    20,
+                    new int[] { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199 },
+                    new string[] { "2", "3", "5", "7", "11", "13", "17", "19", "23", "29", "31", "37", "41", "43", "47", "53", "59", "61", "67", "71", "73", "79", "83", "89", "97", "101", "103", "107", "109", "113", "127", "131", "137", "139", "149", "151", "157", "163", "167", "173", "179", "181", "191", "193", "197", "199" })
+                .AddSpacer()
+                .AddSpacer();
+
+            PrefMananger.RegisterMenu(PreferenceSystemManager.MenuType.PauseMenu);
         }
 
         public void PreInject()
         {
             UpdateTeleporterAppliance();
             UpdateShedMagicEverythingAppliance();
-            UpdateShedTeleportTarget();
+            //UpdateShedTeleportTarget();
         }
 
         void UpdateTeleporterAppliance()
