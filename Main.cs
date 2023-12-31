@@ -13,7 +13,7 @@ namespace KitchenColoredTeleporters
     {
         public const string MOD_GUID = $"IcedMilo.PlateUp.{MOD_NAME}";
         public const string MOD_NAME = "Colored Teleporters";
-        public const string MOD_VERSION = "0.1.3";
+        public const string MOD_VERSION = "0.1.6";
 
         internal const int TELEPORTER_APPLIANCE_ID = 459840623;
         internal const int SHED_MAGIC_EVERYTHING_APPLIANCE_ID = -349733673;
@@ -53,7 +53,7 @@ namespace KitchenColoredTeleporters
                 .AddLabel("Color Stagger")
                 .AddOption<int>(
                     COLOR_STAGGER_ID,
-                    20,
+                    37,
                     new int[] { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97, 101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199 },
                     new string[] { "2", "3", "5", "7", "11", "13", "17", "19", "23", "29", "31", "37", "41", "43", "47", "53", "59", "61", "67", "71", "73", "79", "83", "89", "97", "101", "103", "107", "109", "113", "127", "131", "137", "139", "149", "151", "157", "163", "167", "173", "179", "181", "191", "193", "197", "199" })
                 .AddSpacer()
@@ -81,6 +81,8 @@ namespace KitchenColoredTeleporters
                 Main.LogError("Teleporter Prefab is null!");
                 return;
             }
+            if (teleporter.Prefab.GetComponent<TeleporterColorView>() != null)
+                return;
             Transform teleporterPrefabContainer = teleporter.Prefab?.transform.Find("Teleporter");
             if (teleporterPrefabContainer == null)
             {
@@ -120,6 +122,8 @@ namespace KitchenColoredTeleporters
                 Main.LogError("Shed Magic Everything Prefab is null!");
                 return;
             }
+            if (shedMagicEverthing.Prefab.GetComponent<TeleporterColorView>() != null)
+                return;
             Transform shed = shedMagicEverthing.Prefab?.transform.Find("Shed");
             if (shed == null)
             {

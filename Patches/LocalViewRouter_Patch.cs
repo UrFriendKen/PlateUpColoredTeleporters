@@ -24,7 +24,6 @@ namespace KitchenColoredTeleporters.Patches
 
         static readonly List<OpCode> OPCODES_TO_MATCH = new List<OpCode>()
         {
-            OpCodes.Nop,
             OpCodes.Ldstr,
             OpCodes.Ldarg_1,
             OpCodes.Box,
@@ -35,6 +34,7 @@ namespace KitchenColoredTeleporters.Patches
         // null is ignore
         static readonly List<object> OPERANDS_TO_MATCH = new List<object>()
         {
+            "Specific broadcast contained non-specific data {0}"    
         };
 
         static readonly List<OpCode> MODIFIED_OPCODES = new List<OpCode>()
@@ -45,7 +45,6 @@ namespace KitchenColoredTeleporters.Patches
             //OpCodes.Box,
             //OpCodes.Call
 
-            OpCodes.Nop,
             OpCodes.Nop,
             OpCodes.Nop,
             OpCodes.Nop,

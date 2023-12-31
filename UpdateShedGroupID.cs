@@ -40,16 +40,23 @@ namespace KitchenColoredTeleporters
                     continue;
 
                 int groupID = -1;
-                for (int j = -1; j > -entities.Length - 1; j--)
+                if (Require(teleport.Target, out CConveyTeleport targetTeleport) && targetTeleport.GroupID != 0)
                 {
-                    if (!TempAssigned.Contains(j))
+                    groupID = targetTeleport.GroupID;
+                }
+                else
+                {
+                    for (int j = -1; j > -entities.Length - 1; j--)
                     {
-                        TempAssigned.Add(j);
-                        groupID = j;
-                        break;
+                        if (!TempAssigned.Contains(j))
+                        {
+                            Main.LogInfo($"Grouping {j}");
+                            TempAssigned.Add(j);
+                            groupID = j;
+                            break;
+                        }
                     }
                 }
-
                 teleport.GroupID = groupID;
                 Entity entity = entities[i];
                 Set(entity, teleport);
